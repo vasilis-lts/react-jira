@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import React from 'react'
 
 const ScreenContainer = styled('div')(({ theme }) => ({
-  padding: 20,
+  padding: 0,
   height: "100%",
   overflowY: "auto",
 
