@@ -32,6 +32,7 @@ function Login() {
   let navigate = useNavigate();
 
   async function handleSubmit() {
+    localStorage.setItem('ReactJiraLoggedIn', 'true');
     setAuthStatus('loggedIn');
     navigate('assets');
   }

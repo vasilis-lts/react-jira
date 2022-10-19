@@ -10,7 +10,7 @@ const HeaderContainer = styled('div')(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  backgroundColor: "#263238",
+  backgroundColor: "#E0E0E0",
   paddingLeft: 10,
   paddingRight: 10,
 }));
@@ -22,7 +22,7 @@ function Header({ title }) {
   return (
     <HeaderContainer>
       <Box id="headerLeft">
-        <Typography variant='h6' sx={{ color: "#fff" }}>{title}</Typography>
+        <Typography variant='h6' sx={{ color: "#222" }}>{title}</Typography>
       </Box>
       <Box id="headerRight">
         <Button variant='text' onClick={() => { setAuthStatus('loggedOut'); navigate("/") }}>Logout</Button>
