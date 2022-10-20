@@ -9,7 +9,8 @@ export async function listAssets() {
       res = data;
     })
     .catch(err => {
-      res = err
+      res = err;
+      throw Error(err);
     })
 
   return res;

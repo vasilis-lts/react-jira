@@ -92,39 +92,39 @@ function Assets() {
       <Header title="Asset list" showFilters={() => setShowFilters(true)} />
 
       {assetsQuery.isLoading ? <Typography variant='subtitle1' sx={{ m: 2 }}>Getting assets...</Typography>
-        :
-        <>
+        : assetsQuery.isError ? <Typography variant='subtitle1' sx={{ m: 2 }}>Error getting assets.</Typography> :
+          <>
 
-          {Assets.length ?
-            <div id="assetList">
-              {Assets.map(asset => {
-                return (
-                  <AssetItem key={asset.id} className="assetitem flex jcsb">
-                    <div className="asset-img">
-                      <img src={asset.logo ? asset.logo : logo} style={{ width: 80 }} alt="logo" />
-                    </div>
-                    <div className="asset-text flex-col">
-                      <Typography variant='subtitle1' sx={{ fontWeight: 700 }}>{asset.name}</Typography>
-                      <Typography variant='subtitle1' sx={{ fontWeight: 700 }}>{asset.location}</Typography>
-                    </div>
-                  </AssetItem>)
-              })}
-            </div>
-            : <Typography variant='subtitle1' sx={{ fontWeight: 700, m: 2 }}>No assets found based on the selected criteria</Typography>}
+            {Assets.length ?
+              <div id="assetList">
+                {Assets.map(asset => {
+                  return (
+                    <AssetItem key={asset.id} className="assetitem flex jcsb">
+                      <div className="asset-img">
+                        <img src={asset.logo ? asset.logo : logo} style={{ width: 80 }} alt="logo" />
+                      </div>
+                      <div className="asset-text flex-col">
+                        <Typography variant='subtitle1' sx={{ fontWeight: 700 }}>{asset.name}</Typography>
+                        <Typography variant='subtitle1' sx={{ fontWeight: 700 }}>{asset.location}</Typography>
+                      </div>
+                    </AssetItem>)
+                })}
+              </div>
+              : <Typography variant='subtitle1' sx={{ fontWeight: 700, m: 2 }}>No assets found based on the selected criteria</Typography>}
 
-          {Locations.length && Types.length && OperationalStatuses.length ?
-            <FilterModal
-              initialAssets={InitialAssets}
-              locations={Locations}
-              types={Types}
-              operationalStatuses={OperationalStatuses}
-              show={ShowFilters}
-              close={() => setShowFilters(false)}
-              setFilters={filters => setFilters(filters)}
-            />
-            : null}
+            {Locations.length && Types.length && OperationalStatuses.length ?
+              <FilterModal
+                initialAssets={InitialAssets}
+                locations={Locations}
+                types={Types}
+                operationalStatuses={OperationalStatuses}
+                show={ShowFilters}
+                close={() => setShowFilters(false)}
+                setFilters={filters => setFilters(filters)}
+              />
+              : null}
 
-        </>}
+          </>}
 
     </Screen>
   )
