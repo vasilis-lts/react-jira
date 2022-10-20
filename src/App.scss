@@ -45,3 +45,31 @@ body {
       color-stop(0.72, #004A54),
       color-stop(0.86, #004A54));
 }
+
+///////////// 
+/// COMMON
+/////////////
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-center-y {
+  display: flex;
+  align-items: center;
+}
+
+.flex-center-xy {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.jcsb {
+  justify-content: space-between;
+}
