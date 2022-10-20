@@ -34,6 +34,7 @@ function Assets() {
   const [Types, setTypes] = useState<any[]>([]);
   const [OperationalStatuses, setOperationalStatuses] = useState<any[]>([]);
   const [ShowFilters, setShowFilters] = useState<boolean>(false);
+  const [Filters, setFilters] = useState<any>(null);
 
   useEffect(() => {
     if (assetsQuery.isSuccess) {
@@ -48,8 +49,9 @@ function Assets() {
           const location = issue.fields[CustomField.Location];
           const type = issue.fields[CustomField.Type].value;
           const operationalStatus = issue.fields[CustomField.OperationalStatus].value;
+          const id = issue.id;
 
-          assets.push({ name, logo: "", location })
+          assets.push({ name, logo: "", location, id, type, operationalStatus })
           locations.push(location);
           types.push(type);
           operationalStatuses.push(operationalStatus);
@@ -62,39 +64,67 @@ function Assets() {
       setTypes(types);
       setOperationalStatuses(operationalStatuses);
     }
-  }, [assetsQuery.isSuccess, assetsQuery.data.issues]);
+    // eslint-disable-next-line
+  }, [assetsQuery.isSuccess]);
+
+  useEffect(() => {
+    if (Filters && InitialAssets.length) {
+      let initialAssets = [...InitialAssets];
+
+      if (Filters.LocationSelected !== "0") {
+        initialAssets = initialAssets.filter(ass => ass.location === Filters.LocationSelected);
+      }
+
+      if (Filters.TypeSelected !== "0") {
+        initialAssets = initialAssets.filter(ass => ass.type === Filters.TypeSelected);
+      }
+
+      if (Filters.OperationalStatusSelected !== "0") {
+        initialAssets = initialAssets.filter(ass => ass.operationalStatus === Filters.OperationalStatusSelected);
+      }
+
+      setAssets(initialAssets);
+    }
+  }, [Filters, InitialAssets]);
 
   return (
     <Screen id='Login'>
       <Header title="Asset list" showFilters={() => setShowFilters(true)} />
 
-      {Assets.length ?
-        <div id="assetList">
-          {Assets.map(asset => {
-            return (
-              <AssetItem className="assetitem flex jcsb">
-                <div className="asset-img">
-                  <img src={asset.logo ? asset.logo : logo} style={{ width: 80 }} alt="logo" />
-                </div>
-                <div className="asset-text flex-col">
-                  <Typography variant='subtitle1' sx={{ fontWeight: 700 }}>{asset.name}</Typography>
-                  <Typography variant='subtitle1' sx={{ fontWeight: 700 }}>{asset.location}</Typography>
-                </div>
-              </AssetItem>)
-          })}
-        </div>
-        : null}
+      {assetsQuery.isLoading ? <Typography variant='subtitle1' sx={{ m: 2 }}>Getting assets...</Typography>
+        :
+        <>
 
-      {Locations.length && Types.length && OperationalStatuses.length ?
-        <FilterModal
-          initialAssets={InitialAssets}
-          locations={Locations}
-          types={Types}
-          operationalStatuses={OperationalStatuses}
-          show={ShowFilters}
-          close={() => setShowFilters(false)}
-        />
-        : null}
+          {Assets.length ?
+            <div id="assetList">
+              {Assets.map(asset => {
+                return (
+                  <AssetItem key={asset.id} className="assetitem flex jcsb">
+                    <div className="asset-img">
+                      <img src={asset.logo ? asset.logo : logo} style={{ width: 80 }} alt="logo" />
+                    </div>
+                    <div className="asset-text flex-col">
+                      <Typography variant='subtitle1' sx={{ fontWeight: 700 }}>{asset.name}</Typography>
+                      <Typography variant='subtitle1' sx={{ fontWeight: 700 }}>{asset.location}</Typography>
+                    </div>
+                  </AssetItem>)
+              })}
+            </div>
+            : <Typography variant='subtitle1' sx={{ fontWeight: 700, m: 2 }}>No assets found based on the selected criteria</Typography>}
+
+          {Locations.length && Types.length && OperationalStatuses.length ?
+            <FilterModal
+              initialAssets={InitialAssets}
+              locations={Locations}
+              types={Types}
+              operationalStatuses={OperationalStatuses}
+              show={ShowFilters}
+              close={() => setShowFilters(false)}
+              setFilters={filters => setFilters(filters)}
+            />
+            : null}
+
+        </>}
 
     </Screen>
   )
