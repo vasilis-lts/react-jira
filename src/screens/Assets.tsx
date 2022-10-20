@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import Header from '../components/Header'
 import Screen from '../components/Screen'
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { listAssets } from '../components/AssetController';
 import { CustomField } from '../helpers/constants';
 import logo from '../assets/images/logo-placeholder2.jpg';
 import { Typography } from '@mui/material';
 import styled from '@emotion/styled';
+import FilterModal from '../components/FilterModal';
 
 const AssetItem = styled('div')(({ theme }) => ({
   padding: 10,
@@ -22,7 +23,7 @@ const AssetItem = styled('div')(({ theme }) => ({
 }));
 
 function Assets() {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
   const assetsQuery = useQuery(['listAssets'], listAssets, {
     staleTime: 200000,
   });
@@ -41,24 +42,27 @@ function Assets() {
       let types: string[] = [];
       let operationalStatuses: string[] = [];
 
-      assetsQuery.data.issues.forEach(issue => {
-        const name = issue.fields[CustomField.Name];
-        const location = issue.fields[CustomField.Location];
-        const type = issue.fields[CustomField.Type].value;
-        const operationalStatus = issue.fields[CustomField.OperationalStatus].value;
+      if (assetsQuery.data.issues?.length) {
+        assetsQuery.data.issues.forEach(issue => {
+          const name = issue.fields[CustomField.Name];
+          const location = issue.fields[CustomField.Location];
+          const type = issue.fields[CustomField.Type].value;
+          const operationalStatus = issue.fields[CustomField.OperationalStatus].value;
 
-        assets.push({ name, logo: "", location })
-        locations.push(location);
-        types.push(type);
-        operationalStatuses.push(operationalStatus);
-      });
+          assets.push({ name, logo: "", location })
+          locations.push(location);
+          types.push(type);
+          operationalStatuses.push(operationalStatus);
+        });
+      }
 
+      setInitialAssets(assets);
       setAssets(assets);
       setLocations(locations);
       setTypes(types);
       setOperationalStatuses(operationalStatuses);
     }
-  }, [assetsQuery.isSuccess]);
+  }, [assetsQuery.isSuccess, assetsQuery.data.issues]);
 
   return (
     <Screen id='Login'>
@@ -66,7 +70,6 @@ function Assets() {
 
       {Assets.length ?
         <div id="assetList">
-
           {Assets.map(asset => {
             return (
               <AssetItem className="assetitem flex jcsb">
@@ -77,13 +80,21 @@ function Assets() {
                   <Typography variant='subtitle1' sx={{ fontWeight: 700 }}>{asset.name}</Typography>
                   <Typography variant='subtitle1' sx={{ fontWeight: 700 }}>{asset.location}</Typography>
                 </div>
-              </AssetItem>
-            )
+              </AssetItem>)
           })}
         </div>
         : null}
 
-
+      {Locations.length && Types.length && OperationalStatuses.length ?
+        <FilterModal
+          initialAssets={InitialAssets}
+          locations={Locations}
+          types={Types}
+          operationalStatuses={OperationalStatuses}
+          show={ShowFilters}
+          close={() => setShowFilters(false)}
+        />
+        : null}
 
     </Screen>
   )
