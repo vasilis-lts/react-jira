@@ -4,6 +4,7 @@ import React from 'react'
 import useAuthState from '../hooks/useAuthState';
 import { useNavigate } from "react-router-dom";
 import filterIcon from '../assets/images/filter.png';
+import { ReactComponent as LogoutIcon } from '../assets/images/logout.svg';
 
 const HeaderContainer = styled('div')(({ theme }) => ({
   height: "55px",
@@ -26,7 +27,7 @@ function Header({ title, showFilters }) {
         <Typography variant='h6' sx={{ color: "#222" }}>{title}</Typography>
       </Box>
       <Box id="headerRight" className='flex'>
-        <Button variant='text' onClick={() => { setAuthStatus('loggedOut'); navigate("/") }}>Logout</Button>
+        <Button variant='text' onClick={() => { setAuthStatus('loggedOut'); navigate("/") }}><LogoutIcon color="#444" style={{ width: 25, height: 25 }} /></Button>
         <Button variant='text' onClick={() => showFilters()}><img src={filterIcon} alt='Filter' style={{ width: 25 }} /></Button>
       </Box>
     </HeaderContainer>
