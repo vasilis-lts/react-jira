@@ -1,8 +1,9 @@
+import { BASE_URL } from "../appSettings";
 
 export async function listAssets() {
   let res;
 
-  await fetch('http://localhost:5000/assets')
+  await fetch(BASE_URL + '/assets')
     .then((response) => response.json())
     .then((data) => {
       console.log(data)
