@@ -18,8 +18,8 @@ const HeaderContainer = styled('div')(({ theme }) => ({
 }));
 
 function Header({ title, showFilters }) {
-  let navigate = useNavigate();
   const { setAuthStatus } = useAuthState();
+  let navigate = useNavigate();
 
   return (
     <HeaderContainer>

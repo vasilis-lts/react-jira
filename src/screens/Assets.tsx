@@ -3,11 +3,12 @@ import Header from '../components/Header'
 import Screen from '../components/Screen'
 import { useQuery } from "@tanstack/react-query";
 import { listAssets } from '../components/AssetController';
-import { CustomField } from '../helpers/constants';
+import { AssetsCustomField } from '../helpers/constants';
 import logo from '../assets/images/logo-placeholder2.jpg';
 import { Typography } from '@mui/material';
 import styled from '@emotion/styled';
 import FilterModal from '../components/FilterModal';
+import { Link } from 'react-router-dom';
 
 const AssetItem = styled('div')(({ theme }) => ({
   padding: 10,
@@ -25,7 +26,7 @@ const AssetItem = styled('div')(({ theme }) => ({
 function Assets() {
   // const queryClient = useQueryClient();
   const assetsQuery = useQuery(['listAssets'], listAssets, {
-    staleTime: 200000,
+    staleTime: 30000,
   });
 
   const [InitialAssets, setInitialAssets] = useState<any[]>([]);
@@ -45,10 +46,10 @@ function Assets() {
 
       if (assetsQuery.data.issues?.length) {
         assetsQuery.data.issues.forEach(issue => {
-          const name = issue.fields[CustomField.Name];
-          const location = issue.fields[CustomField.Location];
-          const type = issue.fields[CustomField.Type].value;
-          const operationalStatus = issue.fields[CustomField.OperationalStatus].value;
+          const name = issue.fields[AssetsCustomField.Name];
+          const location = issue.fields[AssetsCustomField.Location];
+          const type = issue.fields[AssetsCustomField.Type].value;
+          const operationalStatus = issue.fields[AssetsCustomField.OperationalStatus].value;
           const id = issue.id;
 
           assets.push({ name, logo: "", location, id, type, operationalStatus })
@@ -88,7 +89,7 @@ function Assets() {
   }, [Filters, InitialAssets]);
 
   return (
-    <Screen id='Login'>
+    <Screen id='Assets'>
       <Header title="Asset list" showFilters={() => setShowFilters(true)} />
 
       {assetsQuery.isLoading ? <Typography variant='subtitle1' sx={{ m: 2 }}>Getting assets...</Typography>
@@ -99,15 +100,18 @@ function Assets() {
               <div id="assetList">
                 {Assets.map(asset => {
                   return (
-                    <AssetItem key={asset.id} className="assetitem flex jcsb">
-                      <div className="asset-img">
-                        <img src={asset.logo ? asset.logo : logo} style={{ width: 80 }} alt="logo" />
-                      </div>
-                      <div className="asset-text flex-col">
-                        <Typography variant='subtitle1' sx={{ fontWeight: 700 }}>{asset.name}</Typography>
-                        <Typography variant='subtitle1' sx={{ fontWeight: 700 }}>{asset.location}</Typography>
-                      </div>
-                    </AssetItem>)
+                    <Link key={asset.id} to={`/asset/${asset.id}`}>
+                      <AssetItem className="assetitem flex jcsb">
+                        <div className="asset-img">
+                          <img src={asset.logo ? asset.logo : logo} style={{ width: 80 }} alt="logo" />
+                        </div>
+                        <div className="asset-text flex-col">
+                          <Typography className='no-dec' variant='subtitle1' sx={{ fontWeight: 700, color: "#222" }}>{asset.name}</Typography>
+                          <Typography className='no-dec' variant='subtitle1' sx={{ fontWeight: 700, color: "#222" }}>{asset.location}</Typography>
+                        </div>
+                      </AssetItem>
+                    </Link>
+                  )
                 })}
               </div>
               : <Typography variant='subtitle1' sx={{ fontWeight: 700, m: 2 }}>No assets found based on the selected criteria</Typography>}

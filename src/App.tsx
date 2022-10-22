@@ -17,7 +17,7 @@ function App() {
     {AuthStatus === 'loggedIn' &&
       <Routes>
         <Route path="assets" element={<Assets />} />
-        <Route path="asset/:id/details" element={<AssetDetails />} />
+        <Route path="asset/:id" element={<AssetDetails />} />
       </Routes>
     }
 
