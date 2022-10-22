@@ -33,6 +33,7 @@ function AssetDetails() {
 
   const [IsOperational, setIsOperational] = useState<boolean>(false);
   const [CurrentTenant, setCurrentTenant] = useState<string>("");
+  const [HourlyPrice, setHourlyPrice] = useState<string>("0");
 
   const assetQuery = useQuery(['asset', id], () => getAssetById(id), { staleTime: 5000, })
   const assetRequestsQuery = useQuery(['assetRequestsByAssetId', id], () => getAssetRequestsByAssetId(id), { staleTime: 5000, })
@@ -53,6 +54,7 @@ function AssetDetails() {
             if (new Date(startDate).getTime() < currentTime && currentTime < new Date(endDate).getTime()) {
               isOperational = true;
               currentTenant = ar.fields[AssetRequestsCustomField.TenantName];
+
             }
           }
         });
@@ -61,6 +63,16 @@ function AssetDetails() {
       setCurrentTenant(currentTenant);
     }
   }, [assetRequestsQuery.isSuccess, assetRequestsQuery.data]);
+
+  useEffect(() => {
+    if (assetQuery.isSuccess) {
+      if (assetQuery.data.fields) {
+        let hourlyPriceNum = assetQuery.data.fields[AssetsCustomField.HourlyPrice] / 60;
+        let hourlyPrice = hourlyPriceNum.toFixed(2);
+        setHourlyPrice(hourlyPrice);
+      }
+    }
+  }, [assetQuery.isSuccess, assetQuery.data]);
 
   return (
     <Screen id='AssetDetails'>
@@ -99,11 +111,13 @@ function AssetDetails() {
 
           {IsOperational && <Box sx={{ width: '100%', mt: 2, mb: 2 }}><LinearProgress color="success" /></Box>}
 
-          <Typography variant='subtitle1'><b>Tenant Name:</b> {CurrentTenant ? CurrentTenant : '-'}</Typography>
-          <Typography variant='subtitle1'><b>Real Time income:</b> {CurrentTenant ? CurrentTenant : '-'}</Typography>
+          <Typography variant='subtitle1'><b>Tenant Name:</b> {IsOperational ? CurrentTenant : '-'}</Typography>
+          <Typography variant='subtitle1'><b>Real Time income:</b> {IsOperational ? HourlyPrice : '0'}&nbsp;€/sec</Typography>
 
         </Box>
         : null}
+
+      {assetQuery.isError ? <Box sx={{ m: 2 }}>Asset data not available</Box> : null}
 
     </Screen>
   )
