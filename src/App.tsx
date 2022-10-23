@@ -16,11 +16,11 @@ function App() {
 
     {AuthStatus === 'loggedIn' &&
       <Routes>
-        <Route path="assets" element={<Assets />} />
+        <Route path="/" element={<Assets />} />
         <Route path="asset/:id" element={<AssetDetails />} />
         <Route
           path="*"
-          element={<Navigate to="/assets" replace />}
+          element={<Navigate to="/" replace />}
         />
       </Routes>
     }

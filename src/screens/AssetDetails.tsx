@@ -100,7 +100,7 @@ function AssetDetails() {
         <Button
           className='back-btn'
           variant='text'
-          onClick={() => navigate("/assets")}>
+          onClick={() => navigate("/")}>
           <BackIcon color="#444" style={{ width: 25, height: 25 }} />
         </Button>
 
