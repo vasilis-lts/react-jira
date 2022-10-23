@@ -98,7 +98,7 @@ export default function FilterModal(props) {
               size='large'
             >Select</Button>
             <Button
-              sx={{ mt: 2 }}
+              sx={{ mt: 1 }}
               variant='contained'
               color='inherit'
               onClick={() => {
@@ -109,7 +109,7 @@ export default function FilterModal(props) {
               size='large'
             >Clear filters</Button>
             <Button
-              sx={{ mt: 2 }}
+              sx={{ mt: 1 }}
               variant='contained'
               color='inherit'
               onClick={() => {
@@ -117,10 +117,7 @@ export default function FilterModal(props) {
               }}
               size='large'
             >Cancel</Button>
-
           </Box>
-
-
         </Box>
       </Modal>
     </div>

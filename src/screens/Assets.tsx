@@ -52,10 +52,11 @@ function Assets() {
           const operationalStatus = issue.fields[AssetsCustomField.OperationalStatus].value;
           const id = issue.id;
 
-          assets.push({ name, logo: "", location, id, type, operationalStatus })
-          locations.push(location);
-          types.push(type);
-          operationalStatuses.push(operationalStatus);
+          assets.push({ name, logo: "", location, id, type, operationalStatus });
+
+          if (!locations.includes(location)) { locations.push(location); }
+          if (!types.includes(type)) { types.push(type); }
+          if (!operationalStatuses.includes(operationalStatus)) { operationalStatuses.push(operationalStatus); }
         });
       }
 
