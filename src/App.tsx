@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import './App.scss';
 import CheckingAuth from './components/CheckingAuth';
 import useAuthState from './hooks/useAuthState';
@@ -18,6 +18,10 @@ function App() {
       <Routes>
         <Route path="assets" element={<Assets />} />
         <Route path="asset/:id" element={<AssetDetails />} />
+        <Route
+          path="*"
+          element={<Navigate to="/assets" replace />}
+        />
       </Routes>
     }
 
