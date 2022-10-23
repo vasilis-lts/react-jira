@@ -1,10 +1,10 @@
 import Screen from '../components/Screen'
 import styled from '@emotion/styled';
-import { Box, Button, LinearProgress, Typography } from '@mui/material';
+import { Box, Button, ButtonGroup, LinearProgress, Typography } from '@mui/material';
 import { ReactComponent as BackIcon } from '../assets/images/back.svg';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { getAssetById, getAssetRequestsByAssetId } from '../components/AssetController';
+import { getAssetById, getAssetRequestsByAssetIdAndDate } from '../components/AssetController';
 import { AssetRequestsCustomField, AssetsCustomField } from '../helpers/constants';
 import logo from '../assets/images/logo-placeholder2.jpg';
 import { useEffect, useState } from 'react';
@@ -33,10 +33,15 @@ function AssetDetails() {
 
   const [IsOperational, setIsOperational] = useState<boolean>(false);
   const [CurrentTenant, setCurrentTenant] = useState<string>("");
-  const [HourlyPrice, setHourlyPrice] = useState<string>("0");
+  const [RevenuePerSecond, setRevenuePerSecond] = useState<number>(0);
+  const [SelectedRevenuePeriodFilter, setSelectedRevenuePeriodFilter] = useState<string>("Today");
+  const [SecondsOperational, setSecondsOperational] = useState<number>(0);
 
   const assetQuery = useQuery(['asset', id], () => getAssetById(id), { staleTime: 5000, })
-  const assetRequestsQuery = useQuery(['assetRequestsByAssetId', id], () => getAssetRequestsByAssetId(id), { staleTime: 5000, })
+  const assetRequestsQuery = useQuery(
+    ['assetRequestsByAssetIdAndDate', id, SelectedRevenuePeriodFilter],
+    () => getAssetRequestsByAssetIdAndDate(id, SelectedRevenuePeriodFilter),
+    { staleTime: 500, })
 
   useEffect(() => {
     if (assetRequestsQuery.isSuccess) {
@@ -45,20 +50,32 @@ function AssetDetails() {
       let isOperational;
       let currentTenant;
 
+      let operationalSeconds = 0;
+
       if (assetRequestsQuery.data.issues.length) {
         assetRequestsQuery.data.issues.forEach(ar => {
           const startDate = ar.fields[AssetRequestsCustomField.StartDate];
           const endDate = ar.fields[AssetRequestsCustomField.EndDate];
 
           if (startDate && endDate) {
-            if (new Date(startDate).getTime() < currentTime && currentTime < new Date(endDate).getTime()) {
+            const startDateTimeStamp = new Date(startDate).getTime();
+            const endDateTimeStamp = new Date(endDate).getTime();
+
+            // pick current time as end time 
+            // for asset requests that are still operating 
+            const operationalEndTimeStamp = endDateTimeStamp > currentTime ? currentTime : endDateTimeStamp;
+
+            operationalSeconds += (operationalEndTimeStamp - startDateTimeStamp) / 1000;
+
+            if (startDateTimeStamp < currentTime && currentTime < endDateTimeStamp) {
               isOperational = true;
               currentTenant = ar.fields[AssetRequestsCustomField.TenantName];
-
             }
           }
         });
       }
+
+      setSecondsOperational(operationalSeconds)
       setIsOperational(isOperational);
       setCurrentTenant(currentTenant);
     }
@@ -67,9 +84,8 @@ function AssetDetails() {
   useEffect(() => {
     if (assetQuery.isSuccess) {
       if (assetQuery.data.fields) {
-        let hourlyPriceNum = assetQuery.data.fields[AssetsCustomField.HourlyPrice] / 60;
-        let hourlyPrice = hourlyPriceNum.toFixed(2);
-        setHourlyPrice(hourlyPrice);
+        let revenuePerSecondNum = assetQuery.data.fields[AssetsCustomField.HourlyPrice] / 3600;
+        setRevenuePerSecond(revenuePerSecondNum);
       }
     }
   }, [assetQuery.isSuccess, assetQuery.data]);
@@ -78,7 +94,7 @@ function AssetDetails() {
     <Screen id='AssetDetails'>
       <HeaderWithBackButton>
         <Typography variant='subtitle1' sx={{ fontWeight: 700 }}>
-          Asset Details
+          Asset
         </Typography>
 
         <Button
@@ -92,7 +108,7 @@ function AssetDetails() {
 
 
       {assetQuery.isSuccess ?
-        <Box className="asset-details flex-col" sx={{ p: 1, alignItems: 'center' }}>
+        <Box className="asset-details flex-col" sx={{ p: 1, alignItems: 'center', mt: 1 }}>
           <Typography variant='h6'>{assetQuery.data.fields[AssetsCustomField.Name]}</Typography>
           <Typography variant='h6'>{assetQuery.data.fields[AssetsCustomField.Location]}</Typography>
           <div className="asset-img">
@@ -106,18 +122,30 @@ function AssetDetails() {
 
       {assetQuery.isSuccess ?
         <Box className="asset-request-details flex-col" sx={{ paddingLeft: 2, paddingRight: 2 }}>
-
           <Typography variant='subtitle1'><b>Working status:</b> {IsOperational ? 'Operational' : 'Non-operational'}</Typography>
-
           {IsOperational && <Box sx={{ width: '100%', mt: 2, mb: 2 }}><LinearProgress color="success" /></Box>}
-
           <Typography variant='subtitle1'><b>Tenant Name:</b> {IsOperational ? CurrentTenant : '-'}</Typography>
-          <Typography variant='subtitle1'><b>Real Time income:</b> {IsOperational ? HourlyPrice : '0'}&nbsp;€/sec</Typography>
-
+          <Typography variant='subtitle1'><b>Real Time income:</b> {IsOperational ? (RevenuePerSecond).toFixed(4) : '0'}&nbsp;€/sec</Typography>
         </Box>
         : null}
 
       {assetQuery.isError ? <Box sx={{ m: 2 }}>Asset data not available</Box> : null}
+
+      <Box className="asset-request-revenuce-filter flex-col" sx={{ paddingLeft: 1, paddingRight: 1, mt: 3 }}>
+        <ButtonGroup variant="contained" disableElevation aria-label="outlined primary button group" sx={{ marginTop: 1 }}>
+          <Button onClick={() => setSelectedRevenuePeriodFilter('Today')} color={SelectedRevenuePeriodFilter === 'Today' ? "primary" : "inherit"}>Today</Button>
+          <Button onClick={() => setSelectedRevenuePeriodFilter('Week')} color={SelectedRevenuePeriodFilter === 'Week' ? "primary" : "inherit"}>Week</Button>
+          <Button onClick={() => setSelectedRevenuePeriodFilter('Month')} color={SelectedRevenuePeriodFilter === 'Month' ? "primary" : "inherit"}>Month</Button>
+          <Button onClick={() => setSelectedRevenuePeriodFilter('Year')} color={SelectedRevenuePeriodFilter === 'Year' ? "primary" : "inherit"}>Year</Button>
+          <Button onClick={() => setSelectedRevenuePeriodFilter('All')} color={SelectedRevenuePeriodFilter === 'All' ? "primary" : "inherit"}>All</Button>
+        </ButtonGroup>
+
+        {RevenuePerSecond ?
+          <Box id='revenueValue' sx={{ paddingLeft: 1, paddingRight: 1, mt: 3 }}>
+            <Typography variant='h6'><b>Revenue:</b> {SecondsOperational ? (RevenuePerSecond * SecondsOperational).toFixed(2) : '0'}€</Typography>
+          </Box>
+          : null}
+      </Box>
 
     </Screen>
   )
