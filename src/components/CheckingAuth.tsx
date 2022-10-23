@@ -9,11 +9,9 @@ function CheckingAuth() {
   const { setAuthStatus } = useAuthState();
 
   useEffect(() => {
-
     const loggedStatusStr = localStorage.getItem('ReactJiraLoggedIn');
     if (loggedStatusStr) {
       setAuthStatus('loggedIn');
-      navigate('/assets');
     } else {
       setAuthStatus('loggedOut')
       navigate('/');
