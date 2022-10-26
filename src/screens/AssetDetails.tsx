@@ -1,6 +1,6 @@
 import Screen from '../components/Screen'
 import styled from '@emotion/styled';
-import { Box, Button, ButtonGroup, LinearProgress, Typography } from '@mui/material';
+import { Box, Button, ButtonGroup, Fade, LinearProgress, Typography } from '@mui/material';
 import { ReactComponent as BackIcon } from '../assets/images/back.svg';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -131,22 +131,24 @@ function AssetDetails() {
 
       {assetQuery.isError ? <Box sx={{ m: 2 }}>Asset data not available</Box> : null}
 
-      <Box className="asset-request-revenuce-filter flex-col" sx={{ paddingLeft: 1, paddingRight: 1, mt: 3 }}>
-        <ButtonGroup variant="contained" disableElevation aria-label="outlined primary button group" sx={{ marginTop: 1 }}>
-          <Button onClick={() => setSelectedRevenuePeriodFilter('Today')} color={SelectedRevenuePeriodFilter === 'Today' ? "primary" : "inherit"}>Today</Button>
-          <Button onClick={() => setSelectedRevenuePeriodFilter('Week')} color={SelectedRevenuePeriodFilter === 'Week' ? "primary" : "inherit"}>Week</Button>
-          <Button onClick={() => setSelectedRevenuePeriodFilter('Month')} color={SelectedRevenuePeriodFilter === 'Month' ? "primary" : "inherit"}>Month</Button>
-          <Button onClick={() => setSelectedRevenuePeriodFilter('Year')} color={SelectedRevenuePeriodFilter === 'Year' ? "primary" : "inherit"}>Year</Button>
-          <Button onClick={() => setSelectedRevenuePeriodFilter('All')} color={SelectedRevenuePeriodFilter === 'All' ? "primary" : "inherit"}>All</Button>
-        </ButtonGroup>
+      <Fade in={assetQuery.isSuccess}>
 
-        {RevenuePerSecond ?
-          <Box id='revenueValue' sx={{ paddingLeft: 1, paddingRight: 1, mt: 3 }}>
-            <Typography variant='h6'><b>Revenue:</b> {SecondsOperational ? (RevenuePerSecond * SecondsOperational).toFixed(2) : '0'}€</Typography>
-          </Box>
-          : null}
-      </Box>
+        <Box className="asset-request-revenuce-filter flex-col" sx={{ paddingLeft: 1, paddingRight: 1, mt: 3 }}>
+          <ButtonGroup variant="contained" disableElevation aria-label="outlined primary button group" sx={{ marginTop: 1 }}>
+            <Button onClick={() => setSelectedRevenuePeriodFilter('Today')} color={SelectedRevenuePeriodFilter === 'Today' ? "primary" : "inherit"}>Today</Button>
+            <Button onClick={() => setSelectedRevenuePeriodFilter('Week')} color={SelectedRevenuePeriodFilter === 'Week' ? "primary" : "inherit"}>Week</Button>
+            <Button onClick={() => setSelectedRevenuePeriodFilter('Month')} color={SelectedRevenuePeriodFilter === 'Month' ? "primary" : "inherit"}>Month</Button>
+            <Button onClick={() => setSelectedRevenuePeriodFilter('Year')} color={SelectedRevenuePeriodFilter === 'Year' ? "primary" : "inherit"}>Year</Button>
+            <Button onClick={() => setSelectedRevenuePeriodFilter('All')} color={SelectedRevenuePeriodFilter === 'All' ? "primary" : "inherit"}>All</Button>
+          </ButtonGroup>
 
+          {RevenuePerSecond ?
+            <Box id='revenueValue' sx={{ paddingLeft: 1, paddingRight: 1, mt: 3 }}>
+              <Typography variant='h6'><b>Revenue:</b> {SecondsOperational ? (RevenuePerSecond * SecondsOperational).toFixed(2) : '0'}€</Typography>
+            </Box>
+            : null}
+        </Box>
+      </Fade>
     </Screen>
   )
 }

@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { listAssets } from '../components/AssetController';
 import { AssetsCustomField } from '../helpers/constants';
 import logo from '../assets/images/logo-placeholder2.jpg';
-import { Typography } from '@mui/material';
+import { Fade, Typography } from '@mui/material';
 import styled from '@emotion/styled';
 import FilterModal from '../components/FilterModal';
 import { Link } from 'react-router-dom';
@@ -98,23 +98,25 @@ function Assets() {
           <>
 
             {Assets.length ?
-              <div id="assetList">
-                {Assets.map(asset => {
-                  return (
-                    <Link key={asset.id} to={`/asset/${asset.id}`}>
-                      <AssetItem className="assetitem flex jcsb">
-                        <div className="asset-img">
-                          <img src={asset.logo ? asset.logo : logo} style={{ width: 80 }} alt="logo" />
-                        </div>
-                        <div className="asset-text flex-col">
-                          <Typography className='no-dec' variant='subtitle1' sx={{ fontWeight: 700, color: "#222" }}>{asset.name}</Typography>
-                          <Typography className='no-dec' variant='subtitle1' sx={{ fontWeight: 700, color: "#222" }}>{asset.location}</Typography>
-                        </div>
-                      </AssetItem>
-                    </Link>
-                  )
-                })}
-              </div>
+              <Fade in={Assets.length > 0}>
+                <div id="assetList">
+                  {Assets.map(asset => {
+                    return (
+                      <Link key={asset.id} to={`/asset/${asset.id}`}>
+                        <AssetItem className="assetitem flex jcsb">
+                          <div className="asset-img">
+                            <img src={asset.logo ? asset.logo : logo} style={{ width: 80 }} alt="logo" />
+                          </div>
+                          <div className="asset-text flex-col">
+                            <Typography className='no-dec' variant='subtitle1' sx={{ fontWeight: 700, color: "#222" }}>{asset.name}</Typography>
+                            <Typography className='no-dec' variant='subtitle1' sx={{ fontWeight: 700, color: "#222" }}>{asset.location}</Typography>
+                          </div>
+                        </AssetItem>
+                      </Link>
+                    )
+                  })}
+                </div>
+              </Fade>
               : <Typography variant='subtitle1' sx={{ fontWeight: 700, m: 2 }}>No assets found based on the selected criteria</Typography>}
 
             {Locations.length && Types.length && OperationalStatuses.length ?
