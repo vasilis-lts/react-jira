@@ -17,7 +17,7 @@ const HeaderWithBackButton = styled('div')(({ theme }) => ({
   paddingRight: 10,
   justifyContent: "center",
   alignItems: "center",
-  backgroundColor: "#E0E0E0",
+  backgroundColor: "#bbdefb",
   position: "relative",
 
   '& .back-btn': {
@@ -108,8 +108,8 @@ function AssetDetails() {
 
 
       {assetQuery.isSuccess ?
-        <Box className="asset-details flex-col" sx={{ p: 1, alignItems: 'center', mt: 1 }}>
-          <Typography variant='h6'>{assetQuery.data.fields[AssetsCustomField.Name]}</Typography>
+        <Box className="asset-details flex-col" sx={{ p: 1, alignItems: 'center', mt: 2 }}>
+          <Typography variant='h4' sx={{ mb: 1, mt: 1 }}>{assetQuery.data.fields[AssetsCustomField.Name]}</Typography>
           <Typography variant='h6'>{assetQuery.data.fields[AssetsCustomField.Location]}</Typography>
           <div className="asset-img">
             <img src={
@@ -133,7 +133,7 @@ function AssetDetails() {
 
       <Fade in={assetQuery.isSuccess}>
 
-        <Box className="asset-request-revenuce-filter flex-col" sx={{ paddingLeft: 1, paddingRight: 1, mt: 3 }}>
+        <Box className="asset-request-revenue-filter flex-col" sx={{ paddingLeft: 1, paddingRight: 1, pt: 3 }}>
           <ButtonGroup variant="contained" disableElevation aria-label="outlined primary button group" sx={{ marginTop: 1 }}>
             <Button onClick={() => setSelectedRevenuePeriodFilter('Today')} color={SelectedRevenuePeriodFilter === 'Today' ? "primary" : "inherit"}>Today</Button>
             <Button onClick={() => setSelectedRevenuePeriodFilter('Week')} color={SelectedRevenuePeriodFilter === 'Week' ? "primary" : "inherit"}>Week</Button>

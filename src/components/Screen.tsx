@@ -4,7 +4,7 @@ import React from 'react'
 const ScreenContainer = styled('div')(({ theme }) => ({
   padding: 0,
   height: "100%",
-  overflowY: "auto",
+  // overflowY: "auto",
 
 }));
 

@@ -13,14 +13,17 @@ import { Link } from 'react-router-dom';
 const AssetItem = styled('div')(({ theme }) => ({
   padding: 10,
   borderBottom: "1px solid #222",
-  backgroundColor: "aliceblue",
+  backgroundColor: '#e3f2fd',
 
+  '&:hover': {
+    backgroundColor: "#f5f5f5",
+    transition: 'background-color 200ms linear'
+  },
   '& .asset-text': {
     flex: 1,
     marginLeft: 15,
     justifyContent: 'space-evenly',
   }
-
 }));
 
 function Assets() {
@@ -95,7 +98,7 @@ function Assets() {
 
       {assetsQuery.isLoading ? <Typography variant='subtitle1' sx={{ m: 2 }}>Getting assets...</Typography>
         : assetsQuery.isError ? <Typography variant='subtitle1' sx={{ m: 2 }}>Error getting assets.</Typography> :
-          <>
+          <div className='assets-container'>
 
             {Assets.length ?
               <Fade in={Assets.length > 0}>
@@ -131,7 +134,7 @@ function Assets() {
               />
               : null}
 
-          </>}
+          </div>}
 
     </Screen>
   )

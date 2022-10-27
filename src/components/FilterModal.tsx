@@ -11,6 +11,7 @@ const modalStyle = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: '90%',
+  maxWidth: 500,
   bgcolor: 'background.paper',
   borderRadius: 1,
   boxShadow: 24,
@@ -96,7 +97,7 @@ export default function FilterModal(props) {
                 props.close();
               }}
               size='large'
-            >Select</Button>
+            >Apply filters</Button>
             <Button
               sx={{ mt: 1 }}
               variant='contained'

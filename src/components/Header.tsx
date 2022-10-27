@@ -12,7 +12,7 @@ const HeaderContainer = styled('div')(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  backgroundColor: "#E0E0E0",
+  backgroundColor: "#bbdefb",
   paddingLeft: 10,
   paddingRight: 10,
 }));
