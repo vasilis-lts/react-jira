@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 const AssetItem = styled('div')(({ theme }) => ({
   padding: 10,
   borderBottom: "1px solid #222",
-  backgroundColor: '#e3f2fd',
+  backgroundColor: 'aliceblue',
 
   '&:hover': {
     backgroundColor: "#f5f5f5",
