@@ -48,11 +48,12 @@ function Assets() {
       let operationalStatuses: string[] = [];
 
       if (assetsQuery.data.issues?.length) {
+
         assetsQuery.data.issues.forEach(issue => {
           const name = issue.fields[AssetsCustomField.Name];
           const location = issue.fields[AssetsCustomField.Location];
-          const type = issue.fields[AssetsCustomField.Type].value;
-          const operationalStatus = issue.fields[AssetsCustomField.OperationalStatus].value;
+          const type = issue.fields[AssetsCustomField.Type] ? issue.fields[AssetsCustomField.Type].value : '';
+          const operationalStatus = issue.fields[AssetsCustomField.OperationalStatus] ? issue.fields[AssetsCustomField.OperationalStatus].value : '';
           const id = issue.id;
 
           assets.push({ name, logo: "", location, id, type, operationalStatus });
