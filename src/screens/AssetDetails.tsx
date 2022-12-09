@@ -32,6 +32,8 @@ function AssetDetails() {
   const { id } = useParams();
 
   const [IsOperational, setIsOperational] = useState<boolean>(false);
+  const [IsClosed, setIsClosed] = useState<boolean>(false);
+  const [IsDeclined, setIsDeclined] = useState<boolean>(false);
   const [CurrentTenant, setCurrentTenant] = useState<string>("");
   const [RevenuePerSecond, setRevenuePerSecond] = useState<number>(0);
   const [SelectedRevenuePeriodFilter, setSelectedRevenuePeriodFilter] = useState<string>("Today");
@@ -52,10 +54,15 @@ function AssetDetails() {
 
       let operationalSeconds = 0;
 
+      console.log(assetRequestsQuery.data)
+
       if (assetRequestsQuery.data.issues.length) {
         assetRequestsQuery.data.issues.forEach(ar => {
           const startDate = ar.fields[AssetRequestsCustomField.StartDate];
           const endDate = ar.fields[AssetRequestsCustomField.EndDate];
+
+          console.log('startDate: ' + startDate);
+          console.log('endDate: ' + endDate);
 
           if (startDate && endDate) {
             const startDateTimeStamp = new Date(startDate).getTime();
@@ -72,6 +79,9 @@ function AssetDetails() {
               currentTenant = ar.fields[AssetRequestsCustomField.TenantName];
             }
           }
+
+          setIsClosed(ar.fields.status?.name === 'Closed');
+          setIsDeclined(ar.fields.resolution?.name === 'Declined');
         });
       }
 
@@ -122,10 +132,10 @@ function AssetDetails() {
 
       {assetQuery.isSuccess ?
         <Box className="asset-request-details flex-col" sx={{ paddingLeft: 2, paddingRight: 2 }}>
-          <Typography variant='subtitle1'><b>Working status:</b> {IsOperational ? 'Operational' : 'Non-operational'}</Typography>
-          {IsOperational && <Box sx={{ width: '100%', mt: 2, mb: 2 }}><LinearProgress color="success" /></Box>}
-          <Typography variant='subtitle1'><b>Tenant Name:</b> {IsOperational ? CurrentTenant : '-'}</Typography>
-          <Typography variant='subtitle1'><b>Real Time income:</b> {IsOperational ? (RevenuePerSecond).toFixed(4) : '0'}&nbsp;€/sec</Typography>
+          <Typography variant='subtitle1'><b>Working status:</b> {IsOperational && !IsClosed && !IsDeclined ? 'Operational' : 'Non-operational'}</Typography>
+          {IsOperational && !IsClosed && !IsDeclined ? <Box sx={{ width: '100%', mt: 2, mb: 2 }}><LinearProgress color="success" /></Box> : null}
+          <Typography variant='subtitle1'><b>Tenant Name:</b> {IsOperational && !IsClosed && !IsDeclined ? CurrentTenant : '-'}</Typography>
+          <Typography variant='subtitle1'><b>Real Time income:</b> {IsOperational && !IsClosed && !IsDeclined ? (RevenuePerSecond).toFixed(4) : '0'}&nbsp;€/sec</Typography>
         </Box>
         : null}
 
@@ -142,8 +152,9 @@ function AssetDetails() {
             <Button onClick={() => setSelectedRevenuePeriodFilter('All')} color={SelectedRevenuePeriodFilter === 'All' ? "primary" : "inherit"}>All</Button>
           </ButtonGroup>
 
-          {RevenuePerSecond ?
+          {RevenuePerSecond && !IsClosed && !IsDeclined ?
             <Box id='revenueValue' sx={{ paddingLeft: 1, paddingRight: 1, mt: 3 }}>
+              {RevenuePerSecond} / {SecondsOperational}
               <Typography variant='h6'><b>Revenue:</b> {SecondsOperational ? (RevenuePerSecond * SecondsOperational).toFixed(2) : '0'}€</Typography>
             </Box>
             : null}
