@@ -8,6 +8,7 @@ import { getAssetById, getAssetRequestsByAssetIdAndDate } from '../components/As
 import { AssetRequestsCustomField, AssetsCustomField } from '../helpers/constants';
 import logo from '../assets/images/logo-placeholder2.jpg';
 import { useEffect, useState } from 'react';
+import dayjs from 'dayjs'
 
 const HeaderWithBackButton = styled('div')(({ theme }) => ({
   height: "55px",
@@ -47,8 +48,8 @@ function AssetDetails() {
 
   useEffect(() => {
     if (assetRequestsQuery.isSuccess) {
+      console.log(SelectedRevenuePeriodFilter);
 
-      const currentTime = new Date().getTime();
       let isOperational;
       let currentTenant;
 
@@ -64,20 +65,51 @@ function AssetDetails() {
           console.log('startDate: ' + startDate);
           console.log('endDate: ' + endDate);
 
+          console.log(dayjs().startOf('week').unix());
+
           if (startDate && endDate) {
-            const startDateTimeStamp = new Date(startDate).getTime();
-            const endDateTimeStamp = new Date(endDate).getTime();
+            const currentTime = dayjs().unix();
 
-            // pick current time as end time 
-            // for asset requests that are still operating 
-            const operationalEndTimeStamp = endDateTimeStamp > currentTime ? currentTime : endDateTimeStamp;
+            const startDateTimeStamp = dayjs(startDate).unix();
+            const endDateTimeStamp = dayjs(endDate).unix();
 
-            operationalSeconds += (operationalEndTimeStamp - startDateTimeStamp) / 1000;
-
-            if (startDateTimeStamp < currentTime && currentTime < endDateTimeStamp) {
+            if (dayjs().unix() < endDateTimeStamp) {
               isOperational = true;
               currentTenant = ar.fields[AssetRequestsCustomField.TenantName];
             }
+
+            let startRevenueTimeStamp;
+
+            switch (SelectedRevenuePeriodFilter) {
+              case "Today":
+                startRevenueTimeStamp = dayjs().startOf('day').unix();
+                break;
+              case "Week":
+                startRevenueTimeStamp = dayjs().startOf('week').unix();
+                break;
+              case "Month":
+                startRevenueTimeStamp = dayjs().startOf('month').unix();
+                break;
+              case "Year":
+                startRevenueTimeStamp = dayjs().startOf('year').unix();
+                break;
+              case "All":
+                startRevenueTimeStamp = dayjs('1970-01-01').unix();
+                break;
+              default:
+                break;
+            }
+
+            // pick start of revenue filter
+            // for asset requests that the start date is earlier than the revenue filter
+            const operationalStartTimeStamp = startDateTimeStamp <= startRevenueTimeStamp ? startRevenueTimeStamp : startDateTimeStamp;
+
+            // pick current time as end time 
+            // for asset requests that are still operating 
+            const operationalEndTimeStamp = endDateTimeStamp >= currentTime ? currentTime : endDateTimeStamp;
+
+            // calc time diff in seconds
+            operationalSeconds += (operationalEndTimeStamp - operationalStartTimeStamp);
           }
 
           setIsClosed(ar.fields.status?.name === 'Closed');
@@ -85,11 +117,14 @@ function AssetDetails() {
         });
       }
 
-      setSecondsOperational(operationalSeconds)
+      // amount of seconds of all assets requests
+      // in the selected period 
+      setSecondsOperational(operationalSeconds);
+
       setIsOperational(isOperational);
       setCurrentTenant(currentTenant);
     }
-  }, [assetRequestsQuery.isSuccess, assetRequestsQuery.data]);
+  }, [assetRequestsQuery.isSuccess, assetRequestsQuery.data, SelectedRevenuePeriodFilter]);
 
   useEffect(() => {
     if (assetQuery.isSuccess) {
@@ -154,10 +189,8 @@ function AssetDetails() {
 
           {RevenuePerSecond && !IsClosed && !IsDeclined ?
             <Box id='revenueValue' sx={{ paddingLeft: 1, paddingRight: 1, mt: 3 }}>
-              {RevenuePerSecond} / {SecondsOperational}
               <Typography variant='h6'><b>Revenue:</b> {SecondsOperational ? (RevenuePerSecond * SecondsOperational).toFixed(2) : '0'}€</Typography>
-            </Box>
-            : null}
+            </Box> : null}
         </Box>
       </Fade>
     </Screen>
