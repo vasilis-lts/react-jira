@@ -40,13 +40,13 @@ function AssetDetails() {
   const [SelectedRevenuePeriodFilter, setSelectedRevenuePeriodFilter] = useState<string>("Today");
   const [SecondsOperational, setSecondsOperational] = useState<number>(0);
 
-  const assetQuery = useQuery(['asset', id], () => getAssetById(id), { staleTime: 5000, })
+  const assetQuery = useQuery(['asset', id], () => getAssetById(id), { staleTime: 2000, })
   const assetRequestsQuery = useQuery(
     ['assetRequestsByAssetIdAndDate', id, SelectedRevenuePeriodFilter],
     () => getAssetRequestsByAssetIdAndDate(id, SelectedRevenuePeriodFilter),
     { staleTime: 500, })
 
-  const downloadQuery = useQuery(['download', id, assetQuery.isSuccess], () => download(assetQuery.data), { staleTime: 5000, retry: false })
+  const downloadQuery = useQuery(['download', id, assetQuery.isSuccess], () => download(assetQuery.data), { staleTime: 2000, retry: false })
 
   useEffect(() => {
     if (assetRequestsQuery.isSuccess) {
