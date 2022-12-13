@@ -4,7 +4,7 @@ import { Box, Button, ButtonGroup, Fade, LinearProgress, Typography } from '@mui
 import { ReactComponent as BackIcon } from '../assets/images/back.svg';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { getAssetById, getAssetRequestsByAssetIdAndDate } from '../components/AssetController';
+import { download, getAssetById, getAssetRequestsByAssetIdAndDate } from '../components/AssetController';
 import { AssetRequestsCustomField, AssetsCustomField } from '../helpers/constants';
 import logo from '../assets/images/logo-placeholder2.jpg';
 import { useEffect, useState } from 'react';
@@ -46,30 +46,22 @@ function AssetDetails() {
     () => getAssetRequestsByAssetIdAndDate(id, SelectedRevenuePeriodFilter),
     { staleTime: 500, })
 
+  const downloadQuery = useQuery(['download', id, assetQuery.isSuccess], () => download(assetQuery.data), { staleTime: 5000, retry: false })
+
   useEffect(() => {
     if (assetRequestsQuery.isSuccess) {
-      console.log(SelectedRevenuePeriodFilter);
 
       let isOperational;
       let currentTenant;
-
       let operationalSeconds = 0;
-
-      console.log(assetRequestsQuery.data)
 
       if (assetRequestsQuery.data.issues.length) {
         assetRequestsQuery.data.issues.forEach(ar => {
           const startDate = ar.fields[AssetRequestsCustomField.StartDate];
           const endDate = ar.fields[AssetRequestsCustomField.EndDate];
 
-          console.log('startDate: ' + startDate);
-          console.log('endDate: ' + endDate);
-
-          console.log(dayjs().startOf('week').unix());
-
           if (startDate && endDate) {
             const currentTime = dayjs().unix();
-
             const startDateTimeStamp = dayjs(startDate).unix();
             const endDateTimeStamp = dayjs(endDate).unix();
 
@@ -151,16 +143,16 @@ function AssetDetails() {
 
       </HeaderWithBackButton>
 
-
       {assetQuery.isSuccess ?
         <Box className="asset-details flex-col" sx={{ p: 1, alignItems: 'center', mt: 2 }}>
           <Typography variant='h4' sx={{ mb: 1, mt: 1 }}>{assetQuery.data.fields[AssetsCustomField.Name]}</Typography>
-          <Typography variant='h6'>{assetQuery.data.fields[AssetsCustomField.Location]}</Typography>
+          <Typography variant='h6' sx={{ mb: 1 }}>{assetQuery.data.fields[AssetsCustomField.Location]}</Typography>
           <div className="asset-img">
-            <img src={
-              assetQuery.data.fields.logo ?
-                assetQuery.data.fields :
-                logo} style={{ width: 80 }} alt="logo" />
+
+            {downloadQuery.isLoading ? <Box sx={{ height: 100 }}></Box> : downloadQuery.isSuccess ?
+              <img src={downloadQuery.data} style={{ height: 100 }} alt="logo" /> :
+              <img src={logo} style={{ height: 100 }} alt="logo" />}
+
           </div>
         </Box>
         : null}

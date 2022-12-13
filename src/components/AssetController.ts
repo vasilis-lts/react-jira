@@ -63,3 +63,26 @@ export async function getAssetRequestsByAssetIdAndDate(id, revenuefilter) {
 
   return res;
 }
+
+export async function download(asset) {
+
+  if (asset?.fields.attachment[0]?.content) {
+    let res;
+    await fetch(BASE_URL + `/downloadAttachment?attachmentUrl=${asset.fields.attachment[0].content}`)
+      .then((response) => response.blob())
+      .then((blob) => {
+        var img = URL.createObjectURL(blob);
+        res = img;
+      })
+      .catch(err => {
+        res = err;
+        throw Error(err);
+      })
+
+    return res;
+  } else {
+    console.log('attachment not found');
+    throw Error();
+  }
+}
+
