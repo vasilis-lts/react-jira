@@ -1,7 +1,6 @@
 import styled from '@emotion/styled';
 import { Typography, TextField, Button } from '@mui/material';
-import React from 'react'
-import logo from '../assets/images/logo-placeholder.png';
+import logo from '../assets/images/logo.png';
 import Screen from '../components/Screen';
 import useAuthState from '../hooks/useAuthState';
 import { useNavigate } from "react-router-dom";
