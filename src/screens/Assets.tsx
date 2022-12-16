@@ -27,14 +27,6 @@ const AssetItem = styled('div')(({ theme }) => ({
 }));
 
 function Assets() {
-  // const queryClient = useQueryClient();
-  const assetsQuery = useQuery(['listAssets'], listAssets, {
-    staleTime: 30000,
-  });
-
-  // const assetsNewQuery = useQuery(['listAssetsNew'], listAssetsNew, {
-  //   staleTime: 30000,
-  // });
 
   const [InitialAssets, setInitialAssets] = useState<any[]>([]);
   const [Assets, setAssets] = useState<any[]>([]);
@@ -43,6 +35,10 @@ function Assets() {
   const [OperationalStatuses, setOperationalStatuses] = useState<any[]>([]);
   const [ShowFilters, setShowFilters] = useState<boolean>(false);
   const [Filters, setFilters] = useState<any>(null);
+
+  const assetsQuery = useQuery(['listAssets'], listAssets, {
+    staleTime: 30000, enabled: !Assets.length
+  });
 
   useEffect(() => {
     if (assetsQuery.isSuccess) {

@@ -81,9 +81,9 @@ export async function getAssetRequestsByAssetIdAndDate(id, revenuefilter) {
 }
 
 export async function downloadAttachment(asset) {
-  let res;
+  let res: any = null;
 
-  if (asset?.fields.attachment[0]?.content) {
+  if (asset?.fields.attachment[0]?.thumbnail) {
     await fetch(BASE_URL + `/downloadAttachment?attachmentUrl=${asset.fields.attachment[0].thumbnail}`)
       .then((response) => response.blob())
       .then((blob) => {
@@ -94,10 +94,8 @@ export async function downloadAttachment(asset) {
         res = err;
         throw Error(err);
       })
-
   } else {
-    console.log('attachment not found');
-    res = ''
+    res = "null"
   }
 
   return res;
