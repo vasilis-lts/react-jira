@@ -4,7 +4,7 @@ import { Box, Button, ButtonGroup, Fade, LinearProgress, Typography } from '@mui
 import { ReactComponent as BackIcon } from '../assets/images/back.svg';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { download, getAssetById, getAssetRequestsByAssetIdAndDate } from '../components/AssetController';
+import { downloadAttachment, getAssetById, getAssetRequestsByAssetIdAndDate } from '../components/AssetController';
 import { AssetRequestsCustomField, AssetsCustomField } from '../helpers/constants';
 import logo from '../assets/images/logo-placeholder2.jpg';
 import { useEffect, useState } from 'react';
@@ -40,13 +40,12 @@ function AssetDetails() {
   const [SelectedRevenuePeriodFilter, setSelectedRevenuePeriodFilter] = useState<string>("Today");
   const [SecondsOperational, setSecondsOperational] = useState<number>(0);
 
-  const assetQuery = useQuery(['asset', id], () => getAssetById(id), { staleTime: 2000, })
+  const assetQuery = useQuery(['asset' + id, id], () => getAssetById(id), { staleTime: 2000, })
   const assetRequestsQuery = useQuery(
     ['assetRequestsByAssetIdAndDate', id, SelectedRevenuePeriodFilter],
     () => getAssetRequestsByAssetIdAndDate(id, SelectedRevenuePeriodFilter),
     { staleTime: 500, })
-
-  const downloadQuery = useQuery(['download', id, assetQuery.isSuccess], () => download(assetQuery.data), { staleTime: 2000, retry: false })
+  const downloadAttachmentQuery = useQuery(['downloadAttachment' + id, id, assetQuery.isSuccess], () => downloadAttachment(assetQuery.data), { staleTime: 2000, retry: false })
 
   useEffect(() => {
     if (assetRequestsQuery.isSuccess) {
@@ -148,11 +147,8 @@ function AssetDetails() {
           <Typography variant='h4' sx={{ mb: 1, mt: 1 }}>{assetQuery.data.fields[AssetsCustomField.Name]}</Typography>
           <Typography variant='h6' sx={{ mb: 1 }}>{assetQuery.data.fields[AssetsCustomField.Location]}</Typography>
           <div className="asset-img">
-
-            {downloadQuery.isLoading ? <Box sx={{ height: 100 }}></Box> : downloadQuery.isSuccess ?
-              <img src={downloadQuery.data} style={{ height: 100 }} alt="logo" /> :
-              <img src={logo} style={{ height: 100 }} alt="logo" />}
-
+            {downloadAttachmentQuery.isLoading ? <Box sx={{ height: 100 }}></Box> : downloadAttachmentQuery.isSuccess ?
+              <img src={downloadAttachmentQuery.data ? downloadAttachmentQuery.data : logo} style={{ height: 100 }} alt="logo" /> : null}
           </div>
         </Box>
         : null}

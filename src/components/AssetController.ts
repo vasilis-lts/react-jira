@@ -16,6 +16,22 @@ export async function listAssets() {
   return res;
 }
 
+export async function listAssetsNew() {
+  let res;
+
+  await fetch(BASE_URL + '/assetsNew')
+    .then((response) => response.json())
+    .then((data) => {
+      res = data;
+    })
+    .catch(err => {
+      res = err;
+      throw Error(err);
+    })
+
+  return res;
+}
+
 export async function getAssetById(id) {
   let res;
 
@@ -64,11 +80,11 @@ export async function getAssetRequestsByAssetIdAndDate(id, revenuefilter) {
   return res;
 }
 
-export async function download(asset) {
+export async function downloadAttachment(asset) {
+  let res;
 
   if (asset?.fields.attachment[0]?.content) {
-    let res;
-    await fetch(BASE_URL + `/downloadAttachment?attachmentUrl=${asset.fields.attachment[0].content}`)
+    await fetch(BASE_URL + `/downloadAttachment?attachmentUrl=${asset.fields.attachment[0].thumbnail}`)
       .then((response) => response.blob())
       .then((blob) => {
         var img = URL.createObjectURL(blob);
@@ -79,10 +95,11 @@ export async function download(asset) {
         throw Error(err);
       })
 
-    return res;
   } else {
     console.log('attachment not found');
-    throw Error();
+    res = ''
   }
+
+  return res;
 }
 

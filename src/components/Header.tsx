@@ -27,8 +27,8 @@ function Header({ title, showFilters }) {
         <Typography variant='h6' sx={{ color: "#222" }}>{title}</Typography>
       </Box>
       <Box id="headerRight" className='flex'>
-        <Button variant='text' onClick={() => { setAuthStatus('loggedOut'); navigate("/") }}><LogoutIcon color="#444" style={{ width: 25, height: 25 }} /></Button>
         <Button variant='text' onClick={() => showFilters()}><img src={filterIcon} alt='Filter' style={{ width: 25 }} /></Button>
+        <Button variant='text' onClick={() => { setAuthStatus('loggedOut'); navigate("/") }}><LogoutIcon color="#444" style={{ width: 25, height: 25 }} /></Button>
       </Box>
     </HeaderContainer>
   )

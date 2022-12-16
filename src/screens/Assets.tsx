@@ -4,11 +4,11 @@ import Screen from '../components/Screen'
 import { useQuery } from "@tanstack/react-query";
 import { listAssets } from '../components/AssetController';
 import { AssetsCustomField } from '../helpers/constants';
-import logo from '../assets/images/logo-placeholder2.jpg';
-import { Fade, Typography } from '@mui/material';
+import { CircularProgress, Fade, Typography } from '@mui/material';
 import styled from '@emotion/styled';
 import FilterModal from '../components/FilterModal';
 import { Link } from 'react-router-dom';
+import AssetLogo from '../components/AssetLogo';
 
 const AssetItem = styled('div')(({ theme }) => ({
   padding: 10,
@@ -31,6 +31,10 @@ function Assets() {
   const assetsQuery = useQuery(['listAssets'], listAssets, {
     staleTime: 30000,
   });
+
+  // const assetsNewQuery = useQuery(['listAssetsNew'], listAssetsNew, {
+  //   staleTime: 30000,
+  // });
 
   const [InitialAssets, setInitialAssets] = useState<any[]>([]);
   const [Assets, setAssets] = useState<any[]>([]);
@@ -55,8 +59,9 @@ function Assets() {
           const type = issue.fields[AssetsCustomField.Type] ? issue.fields[AssetsCustomField.Type].value : '';
           const operationalStatus = issue.fields[AssetsCustomField.OperationalStatus] ? issue.fields[AssetsCustomField.OperationalStatus].value : '';
           const id = issue.id;
+          const issueData = issue.issue;
 
-          assets.push({ name, logo: "", location, id, type, operationalStatus });
+          assets.push({ name, logo: "", location, id, type, operationalStatus, issueData });
 
           if (!locations.includes(location)) { locations.push(location); }
           if (!types.includes(type)) { types.push(type); }
@@ -97,7 +102,8 @@ function Assets() {
     <Screen id='Assets'>
       <Header title="Asset list" showFilters={() => setShowFilters(true)} />
 
-      {assetsQuery.isLoading ? <Typography variant='subtitle1' sx={{ m: 2 }}>Getting assets...</Typography>
+      {assetsQuery.isLoading ? <Typography variant='subtitle1' sx={{ m: 2 }}>
+        <CircularProgress size={14} style={{ marginBottom: -1, marginRight: 2 }} color="inherit" /> Getting assets...</Typography>
         : assetsQuery.isError ? <Typography variant='subtitle1' sx={{ m: 2 }}>Error getting assets.</Typography> :
           <div className='assets-container'>
 
@@ -108,9 +114,7 @@ function Assets() {
                     return (
                       <Link key={asset.id} to={`/asset/${asset.id}`}>
                         <AssetItem className="assetitem flex jcsb">
-                          <div className="asset-img">
-                            <img src={asset.logo ? asset.logo : logo} style={{ width: 80 }} alt="logo" />
-                          </div>
+                          <AssetLogo issueId={asset.id} />
                           <div className="asset-text flex-col">
                             <Typography className='no-dec' variant='subtitle1' sx={{ fontWeight: 700, color: "#222" }}>{asset.name}</Typography>
                             <Typography className='no-dec' variant='subtitle1' sx={{ fontWeight: 700, color: "#222" }}>{asset.location}</Typography>
@@ -121,7 +125,9 @@ function Assets() {
                   })}
                 </div>
               </Fade>
-              : <Typography variant='subtitle1' sx={{ fontWeight: 700, m: 2 }}>No assets found based on the selected criteria</Typography>}
+              : <Fade in={Assets.length === 0}>
+                <Typography variant='subtitle1' sx={{ fontWeight: 700, m: 2 }}>No assets found based on the selected criteria</Typography>
+              </Fade>}
 
             {Locations.length && Types.length && OperationalStatuses.length ?
               <FilterModal
