@@ -1,12 +1,11 @@
 import Screen from '../components/Screen'
 import styled from '@emotion/styled';
-import { Box, Button, ButtonGroup, Fade, LinearProgress, Typography } from '@mui/material';
+import { Box, Button, ButtonGroup, Fade, LinearProgress, Skeleton, Typography } from '@mui/material';
 import { ReactComponent as BackIcon } from '../assets/images/back.svg';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { downloadAttachment, getAssetById, getAssetRequestsByAssetIdAndDate } from '../components/AssetController';
 import { AssetRequestsCustomField, AssetsCustomField } from '../helpers/constants';
-import logo from '../assets/images/logo-placeholder2.jpg';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs'
 
@@ -40,12 +39,17 @@ function AssetDetails() {
   const [SelectedRevenuePeriodFilter, setSelectedRevenuePeriodFilter] = useState<string>("Today");
   const [SecondsOperational, setSecondsOperational] = useState<number>(0);
 
-  const assetQuery = useQuery(['asset' + id, id], () => getAssetById(id), { staleTime: 2000, })
+  const assetQuery = useQuery(['asset' + id, id], () => getAssetById(id), { staleTime: 200000, })
+
   const assetRequestsQuery = useQuery(
     ['assetRequestsByAssetIdAndDate', id, SelectedRevenuePeriodFilter],
     () => getAssetRequestsByAssetIdAndDate(id, SelectedRevenuePeriodFilter),
     { staleTime: 500, })
-  const downloadAttachmentQuery = useQuery(['downloadAttachment' + id, id, assetQuery.isSuccess], () => downloadAttachment(assetQuery.data), { staleTime: 2000, retry: false })
+
+  const downloadAttachmentQuery = useQuery(
+    ['downloadAttachment' + id, id, assetQuery.isSuccess],
+    () => downloadAttachment(assetQuery.data),
+    { staleTime: 200000, retry: false, enabled: assetQuery.isSuccess })
 
   useEffect(() => {
     if (assetRequestsQuery.isSuccess) {
@@ -147,8 +151,27 @@ function AssetDetails() {
           <Typography variant='h4' sx={{ mb: 1, mt: 1 }}>{assetQuery.data.fields[AssetsCustomField.Name]}</Typography>
           <Typography variant='h6' sx={{ mb: 1 }}>{assetQuery.data.fields[AssetsCustomField.Location]}</Typography>
           <div className="asset-img">
-            {downloadAttachmentQuery.isLoading ? <Box sx={{ height: 100 }}></Box> : downloadAttachmentQuery.isSuccess ?
-              <img src={downloadAttachmentQuery.data ? downloadAttachmentQuery.data : logo} style={{ height: 100 }} alt="logo" /> : null}
+
+            {
+              !downloadAttachmentQuery.data ?
+                <Skeleton variant="rectangular" width={200} height={100} /> :
+                downloadAttachmentQuery.data === 'null' ?
+                  <Box
+                    style={{
+                      width: 100,
+                      height: 100,
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      backgroundColor: "#f2f2f2",
+                    }}>
+                    <Typography sx={{ color: "#777" }} variant="subtitle2">No image</Typography>
+                  </Box>
+                  :
+                  <img src={downloadAttachmentQuery.data} style={{ height: 100 }} alt={'issue ' + id + ' img'} />
+            }
+
+
           </div>
         </Box>
         : null}
